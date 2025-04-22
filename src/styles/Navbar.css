@@ -1,0 +1,331 @@
+* {
+  font-family: "Figtree", sans-serif;
+  font-style: normal;
+
+}
+body {
+  padding-top: 80px;
+}
+
+/* Force navbar to stay on top */
+.navbar {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+}
+
+.container {
+  overflow-x: hidden;
+}
+
+/* NavigationBar.css */
+
+/* Navbar container */
+.navbar {
+  padding: 1rem 0;
+  border-bottom: 1px solid #dee2e6;
+  position: relative;
+}
+
+/* Logo styles */
+.navbar-logo {
+  cursor: pointer;
+}
+
+/* Mobile search button */
+.mobile-search-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  margin-right: 1rem;
+}
+
+.mobile-search-icon {
+  width: 22px;
+  height: 22px;
+  filter: grayscale(100%);
+}
+
+/* Mobile search input container */
+.mobile-search-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Mobile search input */
+.mobile-search-input {
+  font-size: 16px;
+  height: 45px;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  padding: 0 10px;
+  width: 300px;
+  flex-grow: 1;
+}
+
+/* Close button */
+.close-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.close-icon {
+  width: 18px;
+  height: 18px;
+  filter: grayscale(100%);
+}
+
+/* Mobile toggle button */
+.mobile-toggle-btn {
+  border: none;
+  padding: 0;
+}
+
+/* Desktop search container */
+.desktop-search-container {
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+}
+
+/* Desktop search input */
+.desktop-search-input {
+  padding-right: 150px;
+  font-size: 16px;
+  height: 45px;
+  outline: none;
+  box-shadow: none;
+  border-radius: 50px !important;
+}
+
+/* Rotating text placeholder */
+.rotating-text {
+  position: absolute;
+  left: 75px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #333;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.rotating-text.fade-out {
+  opacity: 0;
+}
+
+/* Search/close toggle button */
+.search-toggle-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.search-icon {
+  width: 22px;
+  height: 22px;
+  filter: grayscale(100%);
+}
+
+/* Mobile menu dropdown */
+.mobile-menu-dropdown {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  background: white;
+  border-top: 1px solid #dee2e6;
+  top: 100%;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile menu items */
+.mobile-menu-item {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Mobile search results */
+.mobile-search-results {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  background: white;
+  top: 80px;
+  z-index: 1000;
+  padding: 20px;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+/* Service category buttons */
+.service-category-btn {
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: left;
+  justify-content: flex-start;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: grey;
+}
+
+/* Nav links */
+.nav-link {
+  font-weight: 600;
+  color: #212529 !important;
+}
+
+/* Add these to your NavigationBar.css file */
+
+/* Remove focus outline from desktop search input */
+.desktop-search-input:focus {
+  box-shadow: none !important;
+  border-color: #ced4da !important;
+}
+
+/* Remove outline from mobile toggle button */
+.mobile-toggle-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus outline from mobile search input */
+.mobile-search-input:focus {
+  box-shadow: none !important;
+  border-bottom-color: #ddd !important;
+}
+
+/* NavigationBar.css */
+
+/* Desktop nav link hover effect (PC only) */
+@media (min-width: 992px) {
+  .nav-link {
+    position: relative;
+    padding-bottom: 5px;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #0076CE;
+    /* Change color if needed */
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+}
+
+/* Remove any hover effects from mobile menu items */
+.mobile-menu-item:hover::after {
+  display: none !important;
+}
+
+/* Active nav link styling */
+.nav-link {
+  position: relative;
+  color: #6c757d;
+  transition: all 0.3s ease;
+}
+
+
+.active-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  animation: underline 0.3s ease;
+}
+
+/* Mobile menu active link */
+.mobile-menu-item.active-nav-link::after {
+  bottom: 8px;
+}
+
+@keyframes underline {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+/* Logo link */
+.navbar-logo {
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.05);
+}
+
+.fixed-top {
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+/* Common fade effect */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.mobile-rotating-text {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Optional: Keep this if you're using desktop version too */
+.rotating-text {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.explore-search-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+.mobile-rotating-combo {
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-search-input {
+  padding-left: 35px;
+}

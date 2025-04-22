@@ -1,0 +1,153 @@
+.service-page h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Grid Layout */
+  .grid-container1 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* First row: 4 images */
+    gap: 20px;
+    justify-content: center;
+    padding: 30px;
+    margin-top: -30px;
+  }
+  
+  /* Ensure second row has only two images */
+  .grid-container1 div:nth-child(5),
+  .grid-container1 div:nth-child(6) {
+    grid-column: span 0; /* Ensure they span exactly 2 columns each */
+  }
+ 
+ 
+  
+  .grid-container1 div  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+   
+    background-color: #F7F7F7; /* Light Grey */
+    border-radius: 8px;
+    padding: 10px;
+    
+   
+  }
+  
+  
+  .grid-container1 img{
+    width: 130px; 
+    height: 130px; 
+    object-fit: contain; /* Ensures full image visibility */
+    background-color: #F7F7F7; /* Grey background */
+    border: none; /* Uniform border */
+    padding: 10px;
+    border-radius: 8px; /* Rounded corners */
+  }
+  
+  .grid-container1 p {
+    margin-top: 5px;
+    font-size: 14px;
+    
+  }
+  
+  /* Service Card - Rectangular Shape */
+  .service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 250px; 
+    
+   
+  }
+  
+  /* Image Styling - Maintain Rectangle Aspect */
+  .service-img {
+    width: 60%;
+   height: 60px; 
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .service-page h4 {
+    text-align: center;
+    width: 100%; 
+    margin-bottom: 20px; 
+}
+ /* Reduce only HomeAppliance box size */
+.home-appliance .service-card {
+    width: 160px;  
+    height: 150px; 
+    max-width: 180px; 
+    padding: 30px; 
+  
+}
+
+/* Reduce Image Size in HomeAppliance */
+.home-appliance .service-img {
+    width: 130px;  
+    height: 80px;
+    
+}
+.grid-container1 a {
+  text-decoration: none;
+  color: inherit;
+}
+  
+/* Reduce text size for HomeAppliance */
+.home-appliance p {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .grid-container1 {
+    grid-template-columns: repeat(2, 1fr); /* Change to 2 columns */
+    gap: 10px;
+    padding: 10px;
+    margin-top: 25px;
+  }
+  .home-appliance .grid-container1 {
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px;
+    padding: 20px;
+    margin-top: 30px;
+  } 
+ 
+  .service-card {
+    text-align: center;
+    padding: 40px;
+    width:130px;
+    height: 100px;
+    margin-left: 30px;
+  }
+  .home-appliance h2{
+    position: fixed;
+    align-items: center;
+    margin-top: -20px;
+     margin-left: -15px;
+     box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+  }
+ .service-page h2{
+  
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+ }
+  
+  .service-img {
+    width: 90px; /* Adjust image size */
+    height: auto;
+  }
+ 
+}
