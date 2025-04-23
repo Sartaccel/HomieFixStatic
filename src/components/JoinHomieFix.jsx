@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Join.css';
 import worker from '../assets/join-worker.svg';
 import location from '../assets/location.svg';
@@ -84,26 +85,14 @@ const JoinHomieFix = () => {
     setIsSubmitting(true);
     setApiError(null);
     setSuccessMessage(null);
-
     try {
-      const response = await fetch('https://admin.homiefix.in/api/partner/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          service: formData.service,
-          fullName: formData.fullName,
-          phoneNumber: formData.phoneNumber
-        }),
+      const response = await axios.post('https://admin.homiefix.in/api/partner/add', {
+        service: formData.service,
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      console.log("API Response:", data);
+      console.log("API Response:", response.data);
       
       setSuccessMessage("Your application has been submitted successfully!");
       

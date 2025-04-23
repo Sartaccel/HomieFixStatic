@@ -1,32 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Added this import
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 import mail from "../assets/mail.svg";
 import phone from "../assets/phone.svg";
 import drop from "../assets/Vector 77.svg";
 import arrow from "../assets/arrow.svg";
 import "../styles/Contact.css";
 import Footer from './Footer';
-
-// Try to import axios, fallback to fetch if not available
-let httpClient;
-try {
-  httpClient = require("axios");
-} catch (error) {
-  console.warn("Axios not available, falling back to fetch");
-  httpClient = {
-    post: (url, data) => {
-      return fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }).then((res) => res.json());
-    },
-  };
-}
 
 const services = [
   "Home appliances",
@@ -39,7 +21,7 @@ const services = [
 ];
 
 const Contact = () => {
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -76,12 +58,16 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await httpClient.post("https://admin.homiefix.in/api/contact/add", {
+      const response = await axios.post("https://admin.homiefix.in/api/contact/add", {
         service: selectedService.toLowerCase(),
         fullName: formData.fullName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
         message: formData.message
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       console.log("Response:", response.data);
@@ -108,7 +94,16 @@ const Contact = () => {
     } catch (error) {
       console.error("Error submitting form:", error);
 
-      toast.error(error.response?.data?.message || "Error submitting form. Please try again.", {
+      let errorMessage = "Error submitting form. Please try again.";
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "No response from server. Please check your connection.";
+      }
+
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -122,12 +117,9 @@ const Contact = () => {
     }
   };
    
-    // ✅ Function must be INSIDE the component
-    const handleArrowClick = () => {
-      navigate('/');
-    };
-  
-  
+  const handleArrowClick = () => {
+    navigate('/');
+  };
 
   return (
     <>
@@ -142,7 +134,7 @@ const Contact = () => {
                 alt="Arrow Icon"
                 className="me-1"
                 style={{ width: "24px", cursor: 'pointer' }}
-                onClick={handleArrowClick} // Added onClick handler
+                onClick={handleArrowClick}
               />
             </div>
             <div className="col-10">
@@ -170,7 +162,7 @@ const Contact = () => {
                   <a
                     className="text-decoration-none text-black"
                     style={{ fontSize: "16px", fontWeight: "500" }}
-                      href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@homiefix.in"
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@homiefix.in"
                   >
                     contact@homiefix.in
                   </a>
@@ -201,18 +193,6 @@ const Contact = () => {
                   School, Nesamony Nagar, Nagercoil, Tamil Nadu 629001
                 </p>
               </div>
-              {/* <div>
-                <h3 className="h6" style={{ fontSize: "18px" }}>
-                  Address:2
-                </h3>
-                <p
-                  className="mt-3 address1"
-                  style={{ fontSize: "16px", fontWeight: "400" }}
-                >
-                  20C-1C Asaripallam Main Road, 2nd Main St, opposite to Concordia
-                  School, Nesamony Nagar, Nagercoil, Tamil Nadu 629001
-                </p>
-              </div> */}
             </div>
           </div>
 
