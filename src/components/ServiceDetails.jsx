@@ -20,8 +20,8 @@ const ServiceDetails = () => {
   
   return (
     <>
-    <div className="left-arrow"  onClick={handleBack}>
-      <FaArrowLeftLong />  Services  
+    <div className="left-arrow2"  onClick={handleBack}>
+    <span className='ser'>  <FaArrowLeftLong />  Services </span>
         </div>
       <div className='AC-container'>
      

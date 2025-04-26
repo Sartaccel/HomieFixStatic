@@ -113,7 +113,7 @@ main {
   .custom-btn {
     cursor: pointer;
     margin-top: 450px;  /* Adjust as needed */
-    margin-left: -470px; /* Adjust as needed */
+    margin-left: -460px; /* Adjust as needed */
     display: inline-block;
     position: relative; /* Ensure it can have z-index */
     z-index: 10;
@@ -131,7 +131,7 @@ main {
     color:#0076CE;
   }
   .services-section {
-   margin-top: -450px;
+   margin-top: -500px;
     padding: 20px;
   }
  
@@ -260,6 +260,7 @@ main {
   }
   .text-container1 {
     display: flex;
+    margin-top: -70px;
    
     align-items: center;
     gap: 20px;
@@ -450,7 +451,7 @@ main {
    margin-right: 200px;
    }
    .services-section{
-    margin-top: 20px;
+    margin-top: -350px;
    }
    .service-row {
     display: grid;
@@ -476,7 +477,7 @@ main {
   }
  
 .custom{
-    margin-left: 20px;
+    margin-left: -10px;
   font-size: 18px;
   font-weight: 600;
   }
@@ -486,6 +487,7 @@ main {
     flex-direction: column-reverse;
      align-items: center;
     text-align: center;
+    margin-top: -130px;
   }
 
 

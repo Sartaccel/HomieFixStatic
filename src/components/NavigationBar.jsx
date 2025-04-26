@@ -27,7 +27,7 @@ const NavigationBar = () => {
   const mobileInputRef = useRef(null);
   const location = useLocation();
 
-  const isRouteActive = (path) => location.pathname === path;
+  const isRouteActive = (path) => location.pathname === path; 
 
   useEffect(() => {
     if (isActive) return;

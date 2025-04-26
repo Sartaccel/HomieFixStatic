@@ -106,7 +106,7 @@ const HomePage = () => {
     <main>
     <div className="location-container">
         <div className=" d-flex align-items-center location">
-        <FaLocationDot className="location-icon me-2"/>  {/* Blue location icon */}
+        <FaLocationDot className="location-icon me-"/>  {/* Blue location icon */}
         <span className='dist'>Kanyakumari</span>
      
         <div className="head mt-4">
