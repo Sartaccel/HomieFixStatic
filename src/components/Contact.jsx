@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from "axios";
 import mail from "../assets/mail.svg";
 import phone from "../assets/phone.svg";
 import drop from "../assets/Vector 77.svg";
 import arrow from "../assets/arrow.svg";
 import "../styles/Contact.css";
 import Footer from './Footer';
+import api from "../Api";
 
 const services = [
   "Home appliances",
@@ -58,7 +58,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post("https://admin.homiefix.in/api/contact/add", {
+      const response = await api.post("/contact/add", {
         service: selectedService.toLowerCase(),
         fullName: formData.fullName,
         email: formData.email,
@@ -81,7 +81,7 @@ const Contact = () => {
         draggable: true,
         progress: undefined,
       });
-
+ 
       // Reset form after successful submission
       setFormData({
         service: "",
@@ -244,7 +244,7 @@ const Contact = () => {
                 {/* Remaining Form */}
                 <div className="form-group my-2">
                   <label className="form-label">Full name</label>
-                  <div className="mb-3 mt-1">
+                  <div className="mb-3 mt-0">
                     <input
                       type="text"
                       name="fullName"
@@ -258,7 +258,7 @@ const Contact = () => {
                 </div>
                 <div className="form-group mb-2">
                   <label className="form-label">Email</label>
-                  <div className="mb-3 mt-1">
+                  <div className="mb-3 mt-0-">
                     <input
                       type="email"
                       name="email"
@@ -272,7 +272,7 @@ const Contact = () => {
                 </div>
                 <div className="form-group mb-2">
                   <label className="form-label">Phone number</label>
-                  <div className="mb-3 d-flex mt-1">
+                  <div className="mb-3 d-flex mt-0">
                     <span className="me-2 p-2 border" style={{ color: "#C3C3C3" }}>
                       +91
                     </span>
@@ -289,9 +289,9 @@ const Contact = () => {
                 </div>
                 <div className="form-group mb-2">
                   <label className="form-label">Message</label>
-                  <div className="mb-3 mt-1">
+                  <div className="mb-3 mt-0">
                     <textarea
-                      className="form-control no-focus-border"
+                      className="form-control no-focus-border meseage-input"
                       name="message"
                       rows="4"
                       placeholder="Message"

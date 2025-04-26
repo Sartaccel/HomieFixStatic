@@ -2,16 +2,17 @@
     margin-top: 70px;
    float:left;
   margin-left: -270px;
-    
+   
 }
 .mobile-container {
     background-color: #F7F7F8;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 40px;
+    min-height: 100vh;
   }
-  
+ 
   .content-wrapper {
     display: flex;
     flex-direction: row;
@@ -23,7 +24,10 @@
     margin-bottom: 20px;
 }
 
+
 /* Image Styling */
+
+
 
 
 /* Text Section */
@@ -32,9 +36,17 @@
     flex-direction: column;
     gap: 10px;
     max-width: 600px;
-    margin-top: 60px;
+    margin-top: -90px;
     margin-left: 140px;
+   
 }
+.text-container h3{
+    font-weight: 600;
+}
+.text-container p{
+    line-height: 28px;
+}
+
 
 /* Features Section (Side by Side) */
 .features-grid {
@@ -44,7 +56,9 @@
    text-align: center;
     margin-top: 20px;
 }
-
+.req{
+    margin-left: 200px;
+}
 .feature {
     display: flex;
     flex-direction: column;
@@ -58,8 +72,9 @@
     overflow: hidden;
     text-overflow: ellipsis; /* Adds "..." if text overflows */
     font-size: 18px; /* Adjust font size */
-    
+   
 }
+
 
 /* Restrict paragraph to 3 lines */
 .feature p {
@@ -72,30 +87,36 @@
     max-width: 90%; /* Ensure text doesn't stretch */
 }
 
+
 /* Feature Icons */
 .icon {
     width: 50px;
     height: 50px;
 }
 
+
 /* QR & Play Store Section */
 .qr-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    margin-top: -120px;
 }
 
+
 .qr {
-    width: 150px;
+    width: 80px;
     height: auto;
 }
 
+
 .playstore img {
     width: 150px;
-    margin-left: 490px;
-    margin-top: -170px;
+    margin-left: 420px;
+    margin-top: -120px;
 }
+
+
 @media (max-width: 768px) {
     .image{
         margin-left: 10px;
@@ -107,7 +128,7 @@
         text-align: center;
         width: 400px;
     }
-
+ 
     /* Stack Features in One Column */
     .features-grid {
         display: flex;
@@ -116,21 +137,31 @@
         gap: 15px;
     }
 
+
     /* Move text above the image */
     .text-container {
         order: -1; /* Moves it to the top */
         text-align: center;
         width: 340px;
         margin-left: 20px;
+        margin-top: 30px;
     }
-
+ .req{
+    margin-left: 20px;
+ }
+ .text-container h3{
+    font-weight: 600;
+ }
     /* Ensure QR Code & Play Store are below */
     .qr-section {
         order: 1; /* Moves it to the bottom */
         padding:-45px;
         margin-left: -190px;
+        margin-top: 40px;
     }
     .playstore-img{
         margin-right: 150px;
     }
 }
+
+

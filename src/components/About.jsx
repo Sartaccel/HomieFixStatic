@@ -25,7 +25,7 @@ const About = () => {
     <div className='about-container'>
         <div className="about-content">
           <img src={bigLogo} alt="Logo" className="about-logo" />
-          <div className="about-text">
+          <div className="about-text mt-4">
             <h5>HomieFix - Your Trusted Home Service Platform</h5>
             <p>
               HomieFix is a smart technology platform that connects you with top-rated professionals for all your home service

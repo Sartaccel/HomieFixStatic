@@ -29,6 +29,40 @@
     object-fit: contain;
 }
 
+/* Service Dropdown Styling */
+.dropdown-toggle-custom span {
+    transition: color 0.2s ease;
+}
+
+/* Date Input Styling */
+input[type="date"].line.date-input {
+    color: #000;  
+}
+
+input[type="date"].line.date-input:invalid {
+    color: #C3C3C3;
+}
+
+/* Chrome/Safari */
+input[type="date"].line.date-input::-webkit-datetime-edit {
+    color: inherit;
+}
+
+/* Firefox */
+input[type="date"].line.date-input:not([value]) {
+    color: #C3C3C3;
+}
+.line:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+  }
+
+/* For all inputs placeholder text */
+.line::placeholder {
+    color: #C3C3C3;
+    opacity: 1; /* Firefox */
+}
 /* Enhanced blinking */
 @keyframes blink {
     0% {

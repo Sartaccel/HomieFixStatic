@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
 import '../styles/Join.css';
 import worker from '../assets/join-worker.svg';
 import location from '../assets/location.svg';
@@ -13,6 +12,7 @@ import leftArrow from '../assets/left.svg';
 import drop from "../assets/Vector 77.svg";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from './Footer';
+import api from '../Api';
 
 const services = [
   "Home appliances",
@@ -38,19 +38,24 @@ const JoinHomieFix = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     // Show modal if register parameter is true
     if (searchParams.get('register') === 'true') {
       setShowModal(true);
     }
+
+    // Preload the worker image
+    const img = new Image();
+    img.src = worker;
+    img.onload = () => setImageLoaded(true);
   }, [searchParams]);
 
   const handleClose = () => {
     setShowModal(false);
     setApiError(null);
     setSuccessMessage(null);
-    // Remove the register parameter when closing modal
     navigate('/join', { replace: true });
   };
 
@@ -75,7 +80,6 @@ const JoinHomieFix = () => {
       return;
     }
 
-    // Validate phone number
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(formData.phoneNumber)) {
       alert("Please enter a valid 10-digit phone number");
@@ -86,7 +90,7 @@ const JoinHomieFix = () => {
     setApiError(null);
     setSuccessMessage(null);
     try {
-      const response = await axios.post('https://admin.homiefix.in/api/partner/add', {
+      const response = await api.post('/partner/add', {
         service: formData.service,
         fullName: formData.fullName,
         phoneNumber: formData.phoneNumber
@@ -96,7 +100,6 @@ const JoinHomieFix = () => {
       
       setSuccessMessage("Your application has been submitted successfully!");
       
-      // Reset form
       setFormData({
         service: "",
         fullName: "",
@@ -104,7 +107,6 @@ const JoinHomieFix = () => {
       });
       setSelectedService("");
       
-      // Close modal after 3 seconds
       setTimeout(() => {
         handleClose();
       }, 3000);
@@ -141,7 +143,18 @@ const JoinHomieFix = () => {
         <div className="row pt-5 pt-md-0">
           {/* Image - Moves to top on mobile */}
           <div className="col-md-4 order-md-2">
-            <img src={worker} alt="Worker" className="img-fluid" />
+            <img 
+              src={worker} 
+              alt="Worker" 
+              className="img-fluid" 
+              loading="eager"  // Changed from lazy to eager for above-the-fold image
+              style={{
+                opacity: imageLoaded ? 1 : 0,
+                transition: 'opacity 0.5s ease-in',
+                width: '100%',
+                height: 'auto'
+              }}
+            />
           </div>
 
           {/* Text Content */}
@@ -156,7 +169,7 @@ const JoinHomieFix = () => {
             <h3 className="fw-semibold mb-2 fs-2">
               Join Homefix – Grow Your Business with Us!
             </h3>
-            <p className="col-md-11 mb-4 fs-5 responsive-paragraph" style={{ color: '#6B6B6B' }}>
+            <p className="col-md-11 mb-4 responsive-paragraph" style={{ color: '#6B6B6B',fontSize:'115%' }}>
               Are you a skilled home service professional? Homefix connects you with customers who need reliable services.
               Join our network and get more job opportunities without the hassle of marketing or customer hunting.
             </p>
@@ -384,7 +397,6 @@ const JoinHomieFix = () => {
         )}
       </div>
       
-      {/* Footer outside container for full width */}
       <Footer />
     </>
   );

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import NavigationBar from './NavigationBar';
 import { useNavigate } from "react-router-dom";
 import Mobile from './Mobile';
 import Footer from './Footer';
@@ -17,21 +16,21 @@ import ACRepair from "../assets/ACRepair.svg";
 import { FaLocationDot } from "react-icons/fa6";
 import { HiArrowTurnRightDown } from "react-icons/hi2";
 import appliance from "../assets/appliance.svg";
-import vehicle from "../assets/vehicle.jpg";
-import plumber from "../assets/plumber.jpg";
-import electrician from "../assets/electrician.jpg";
-import cleaning from "../assets/cleaning.jpg";
-import cctv from "../assets/cctv.jpg";
-import carpent from "../assets/carpent.jpg";
-import caretaker from "../assets/caretaker.jpg";
+import vehicle from "../assets/vehicle.svg";
+import plumber from "../assets/plumber.svg";
+import electrician from "../assets/electrician.svg";
+import cleaning from "../assets/cleaning.svg";
+import cctv from "../assets/cctv.svg";
+import carpent from "../assets/carpent.svg";
+import caretaker from "../assets/caretaker.svg";
 import man from "../assets/man.jpg";
 import tap from "../assets/tap.jpg";
 import user from "../assets/user.jpg";
 import man2 from "../assets/man2.jpg";
 import "../styles/HomePage.css";''
-import sheild from "../assets/sheild.svg"
-import rupee from "../assets/rupee.svg"
-import heart from "../assets/heart.svg"
+import sheild from "../assets/sheild.svg";
+import heart from "../assets/heart.svg";
+import rupee from "../assets/rupee.svg";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 
 
@@ -197,11 +196,11 @@ const HomePage = () => {
           <div className='column'>
            
             <div className='paragraph'>
-              <h5><img src={sheild} alt="sheild" className='icon-style'/>Trusted & Trained Experts</h5>
+              <h5><img src={sheild} alt="sheild" />Trusted & Trained Experts</h5>
               <p>At HomieFix, we vet, train, and certify every professional, ensuring top-quality service while handling all legal requirements for your peace of mind.</p>
             </div>
             <div className='paragraph'>
-              <h5><img src={heart} alt="heart" className='icon-style'/>100% Satisfaction Guarantee</h5>
+              <h5><img src={heart} alt="heart" />100% Satisfaction Guarantee</h5>
               <p>Your happiness is our priority! If you're not satisfied with the service, HomieFix is always here to help. Contact us anytime for support or a compensation service.</p>
             </div>
             <div className='paragraph'>
@@ -211,7 +210,7 @@ const HomePage = () => {
           </div>
           <div className='column'>
             <div className='paragraph'>
-              <h5><img src={rupee} alt="rupee" className='icon-style'/>Pay Securely After Service</h5>
+              <h5><img src={rupee} alt="rupee" />Pay Securely After Service</h5>
               <p>With HomieFix, you only pay after the job is done. Enjoy secure, hassle-free payments once your service is completed to your satisfaction.</p>
             </div>
             <div className='paragraph'>

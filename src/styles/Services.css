@@ -1,138 +1,146 @@
 .services-appliance {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    gap: 40px;
-    padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: 40px;
+  padding: 20px;
+}
+
+.home-appliance, .Electrician, .carpentry, .plumbing, .vehicles,.caretaker {
+  width: 90%;
+  text-align: left;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* Default: 6 per row */
+  gap: 10px;
+  justify-content: center;
+}
+.home-appliance h4,
+.Electrician h4,
+.carpentry h4,
+.plumbing h4,
+.vehicles h4,
+.caretaker h4 {
+  margin-bottom: 55px;
+}
+
+.grid-container div  {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+ 
+  background-color: #F7F7F7; /* Light Grey */
+  border-radius: 8px;
+  padding: 10px;
+ 
+ 
+}
+
+
+.grid-container img{
+  width: 130px;
+  height: 130px;
+  object-fit: contain; /* Ensures full image visibility */
+  background-color: #F7F7F7; /* Grey background */
+  border: none; /* Uniform border */
+  padding: 10px;
+  border-radius: 8px; /* Rounded corners */
+}
+
+.grid-container p {
+  margin-top: 5px;
+  font-size: 14px;
+ 
+}
+
+
+.grid-container:nth-of-type(2) {
+  margin-top: 20px; /* Adds spacing between first and second row */
+}
+
+.left-arrow {
+  display: none; /* Hide by default */
+}
+
+.grid-container a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.grid-container div:hover {
+  cursor: pointer;
+  transform: scale(1.03);
+  transition: 0.2s ease-in-out;
+}
+
+
+/* Make sections display images in 2x2 format for mobile */
+@media (max-width: 768px) {
+  html, body {
+     overflow-x: hidden;  
+    width: 100%;
   }
-  
-  .home-appliance, .Electrician, .carpentry, .plumbing, .vehicles,.caretaker {
-    width: 90%;
-    text-align: left;
-  }
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); /* Default: 6 per row */
-    gap: 10px;
-    justify-content: center;
-  }
-  .home-appliance h4,
-  .Electrician h4,
-  .carpentry h4,
-  .plumbing h4,
-  .vehicles h4,
-  .caretaker h4 {
-    margin-bottom: 55px;
-  }
-  
-  .grid-container div  {
-    display: flex;
+  .services-appliance {
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-   
-    background-color: #F7F7F7; /* Light Grey */
-    border-radius: 8px;
-    padding: 10px;
-    
    
   }
-  
-  
-  .grid-container img{
-    width: 130px; 
-    height: 130px; 
-    object-fit: contain; /* Ensures full image visibility */
-    background-color: #F7F7F7; /* Grey background */
-    border: none; /* Uniform border */
-    padding: 10px;
-    border-radius: 8px; /* Rounded corners */
+
+  .grid-container {
+   
+    grid-template-columns: repeat(2, 1fr);
+   margin-left: 20px;
   }
-  
+ 
+  .home-appliance h4{
+    margin-top: 40px;
+  }
+
+  /* Last Item Centered in Mobile */
+  .last-single-item {
+    grid-column: span 2;
+  }
+ 
+  /* Adjust image size */
+  .grid-container img {
+    object-fit: contain;
+    width: 130px;
+    height: 100px;
+  }
   .grid-container p {
-    margin-top: 5px;
     font-size: 14px;
-    
+    margin-top: 5px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  
-  
-  .grid-container:nth-of-type(2) {
-    margin-top: 20px; /* Adds spacing between first and second row */
+  .home-appliance,
+  .Electrician,
+  .carpentry,
+  .plumbing,
+  .vehicles {
+    padding: 15px;
+    margin-bottom: 80px; /* Add bottom margin to separate sections */
   }
-  
+  .carpentry h4 {
+    margin-top: 30px; /* Add space between Electrician and Carpentry */
+  }
   .left-arrow {
-    display: none; /* Hide by default */
-  }
-  
-  .grid-container a {
-    text-decoration: none;
-    color: inherit;
-  }
-  
-  .grid-container div:hover {
+    position: fixed;
+    width: 100%;
+    display: flex; /* Show in mobile view */
+    margin-top: -20px;
+    align-items: center;
+    height: 60px;
+    gap: 10px;
     cursor: pointer;
-    transform: scale(1.03);
-    transition: 0.2s ease-in-out;
-  } 
-  
-  
-  /* Make sections display images in 2x2 format for mobile */
-  @media (max-width: 768px) {
-    html, body {
-       overflow-x: hidden;  
-      width: 100%;
-    }
-    .services-appliance {
-      flex-direction: column;
-     
-    }
-  
-    .grid-container {
-     
-      grid-template-columns: repeat(2, 1fr);
-     margin-left: 20px;
-    }
-    
-    .home-appliance h4{
-      margin-top: 40px;
-    }
-  
-    /* Last Item Centered in Mobile */
-    .last-single-item {
-      grid-column: span 2;
-    }
-   
-    /* Adjust image size */
-    .grid-container img {
-      width: 130px;
-      height: 100px;
-    }
-    .home-appliance, 
-    .Electrician, 
-    .carpentry, 
-    .plumbing, 
-    .vehicles {
-      padding: 15px;
-      margin-bottom: 80px; /* Add bottom margin to separate sections */
-    }
-    .carpentry h4 {
-      margin-top: 30px; /* Add space between Electrician and Carpentry */
-    }
-    .left-arrow {
-      position: fixed;
-      width: 100%;
-      display: flex; /* Show in mobile view */
-      margin-top: -20px;
-      align-items: center;
-      height: 60px;
-      gap: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 10px 15px;
-      box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
-      background: white;
-     
-    
-    }
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 15px;
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
+    background: white;
+   margin-top: 1px;
   }
+}

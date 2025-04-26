@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
 import circle from '../assets/quick-circle.svg';
 import drop from '../assets/Vector 77.svg';
 import '../styles/QuickOrder.css';
+import api from '../Api';
 
 const services = [
     "Home appliances",
@@ -16,10 +16,10 @@ const services = [
 
 const QuickOrder = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [selectedService, setSelectedService] = useState("Ac Repair");
+    const [selectedService, setSelectedService] = useState("Service");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [formData, setFormData] = useState({
-        serviceName: "Ac Repair",
+        serviceName: "",
         name: '',
         phone: '',
         date: '',
@@ -47,31 +47,31 @@ const QuickOrder = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-     
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        
+
         try {
-            const response = await axios.post('https://admin.homiefix.in/api/website-booking/add', {
+            const response = await api.post('/website-booking/add', {
                 serviceName: formData.serviceName,
                 name: formData.name,
                 phone: formData.phone,
                 date: formData.date,
                 location: formData.location
             });
-            
+
             console.log('Submission successful', response.data);
             setSubmitSuccess(true);
             // Reset form
             setFormData({
-                serviceName: "Ac Repair",
+                serviceName: "",
                 name: '',
                 phone: '',
                 date: '',
                 location: ''
             });
-            setSelectedService("Ac Repair");
+            setSelectedService("Service");
         } catch (error) {
             console.error('Error submitting form:', error);
             alert('Failed to submit. Please try again.');
@@ -80,11 +80,10 @@ const QuickOrder = () => {
         }
     };
 
-    // Handle click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (isPopupOpen && 
-                popupRef.current && 
+            if (isPopupOpen &&
+                popupRef.current &&
                 !popupRef.current.contains(event.target) &&
                 chatbotRef.current &&
                 !chatbotRef.current.contains(event.target)) {
@@ -92,12 +91,10 @@ const QuickOrder = () => {
             }
         };
 
-        // Add event listener when popup is open
         if (isPopupOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
-        // Clean up the event listener
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
@@ -105,12 +102,10 @@ const QuickOrder = () => {
 
     return (
         <>
-            {/* Chatbot button */}
             <div className="quick-order-chatbot" onClick={togglePopup} ref={chatbotRef}>
                 <img src={circle} alt="Quick Order" className="chatbot-img" />
             </div>
 
-            {/* Popup positioned near the chatbot */}
             {isPopupOpen && (
                 <div className="popup-container" ref={popupRef} style={{
                     position: 'fixed',
@@ -123,7 +118,7 @@ const QuickOrder = () => {
                         {submitSuccess ? (
                             <div className="success-message p-3 text-center">
                                 <p>Your booking has been submitted successfully!</p>
-                                <button 
+                                <button
                                     className="popup-submit"
                                     onClick={togglePopup}
                                 >
@@ -135,8 +130,7 @@ const QuickOrder = () => {
                                 <form onSubmit={handleSubmit}>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Service</label>
-                                        {/* Custom Dropdown */}
-                                        <div className="position-relative service-mob " style={{ width: '51%' }}>
+                                        <div className="position-relative service-mob" style={{ width: '51%' }}>
                                             <div
                                                 className="line service-mob dropdown-toggle-custom"
                                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -146,11 +140,14 @@ const QuickOrder = () => {
                                                     alignItems: 'center',
                                                     padding: '0 10px',
                                                     cursor: 'pointer',
-                                                    color: selectedService ? "#000" : "#C3C3C3",
                                                     height: '30px'
                                                 }}
                                             >
-                                                <span>{selectedService}</span>
+                                                <span style={{
+                                                    color: selectedService === "Service" ? '#C3C3C3' : '#000'
+                                                }}>
+                                                    {selectedService}
+                                                </span>
                                                 <img src={drop} alt="" className="dropdown-caret" style={{ width: '12px' }} />
                                             </div>
 
@@ -173,7 +170,8 @@ const QuickOrder = () => {
                                                                 onClick={() => handleServiceSelect(service)}
                                                                 style={{
                                                                     padding: '8px 12px',
-                                                                    cursor: 'pointer'
+                                                                    cursor: 'pointer',
+                                                                    color: '#000'
                                                                 }}
                                                             >
                                                                 {service}
@@ -187,56 +185,53 @@ const QuickOrder = () => {
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Ph No</label>
-                                        <input 
-                                            type="text" 
+                                        <input
+                                            type="text"
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleInputChange}
-                                            placeholder='phone number' 
-                                            className='line' 
+                                            placeholder='phone number'
+                                            className='line'
                                             required
                                         />
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Name</label>
-                                        <input 
-                                            type="text" 
+                                        <input
+                                            type="text"
                                             name="name"
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            placeholder='name' 
-                                            className='line' 
+                                            placeholder='name'
+                                            className='line'
                                             required
                                         />
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Date</label>
-                                        <input 
-                                            type="date" 
+                                        <input
+                                            type="date"
                                             name="date"
                                             value={formData.date}
                                             onChange={handleInputChange}
-                                            placeholder='24-02-2025' 
-                                            className='line' 
+                                            className='line date-input'
                                             required
-                                            
                                         />
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Location</label>
-                                        <input 
-                                            type="text" 
+                                        <input
+                                            type="text"
                                             name="location"
                                             value={formData.location}
                                             onChange={handleInputChange}
-                                            placeholder='location' 
-                                            className='line' 
+                                            placeholder='location'
+                                            className='line'
                                             required
-                                            
                                         />
                                     </div>
-                                    <button 
-                                        className="popup-submit" 
+                                    <button
+                                        className="popup-submit"
                                         type="submit"
                                         disabled={isSubmitting}
                                     >

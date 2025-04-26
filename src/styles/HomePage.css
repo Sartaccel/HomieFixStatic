@@ -24,7 +24,7 @@ main {
   .image-container {
     position: absolute; /* Allows absolute positioning */
     right: 0; /* Align to the right */
-    top: 0; /* Align to the top */
+    top: -60px; /* Align to the top */
     width: 100%; /* Adjust width as needed */
     height: 100vh; /* Full height */
     display: flex;
@@ -37,7 +37,7 @@ main {
     position: absolute;
     object-fit: 600%;
     width: 100%;
-    height: 110%;
+    height: 130%;
     opacity: 0;
     z-index: -1;
     transition: opacity 1.5s ease-in-out;
@@ -131,7 +131,7 @@ main {
     color:#0076CE;
   }
   .services-section {
-   margin-top: -160px;
+   margin-top: -450px;
     padding: 20px;
   }
  
@@ -227,8 +227,8 @@ main {
 
 /* Styling the Arrow Icon */
 .join button svg {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 38px;
     background-color: #0076CE; /* White circle */
     color: white; /* Blue arrow */
     border-radius: 50%;
@@ -579,7 +579,7 @@ margin-top: -90px;
 
 .close-btn {
   position: fixed;
-  top: -5px;
+  top: 7px;
   right: 10px;
   font-size: 28px;
  
