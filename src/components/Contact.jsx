@@ -315,7 +315,9 @@ const Contact = () => {
           </div>
         </div>
       </div>
-
+      <br />
+      <br />
+      <br />
       {/* Footer outside container for full width */}
       <Footer />
     </>

@@ -19,8 +19,8 @@ const Footer = () => {
     navigate('/join?register=true');
   };
   return (
-    <footer className="mt-5  py-5" style={{ fontFamily: "Figtree", color: "#333333", backgroundColor: "#F7F7F7" }}>
-      <div className="container">
+    <footer className="py-4" style={{ fontFamily: "Figtree", color: "#333333", backgroundColor: "#F7F7F7" }}>
+      <div className="container mt-5">
         {/* Logo & Vector Images */}
 
         <div className="row align-items-center mb-4 footer-section">

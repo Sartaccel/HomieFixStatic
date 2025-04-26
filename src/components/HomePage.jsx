@@ -230,6 +230,9 @@ const HomePage = () => {
       <p>Connect with customers,get more jobs,and build your reputation with HomieFix</p>
       <button onClick={handleJoinClick}>Join HomieFix <LiaLongArrowAltRightSolid /></button>
      </div>
+     <br />
+     <br />
+     <br />
      <Footer/>
     </>
   )

@@ -396,7 +396,9 @@ const JoinHomieFix = () => {
           </div>
         )}
       </div>
-      
+      <br />
+      <br />
+      <br />
       <Footer />
     </>
   );
