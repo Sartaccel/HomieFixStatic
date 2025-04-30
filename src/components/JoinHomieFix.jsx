@@ -35,27 +35,76 @@ const JoinHomieFix = () => {
     fullName: "",
     phoneNumber: ""
   });
+  const [formErrors, setFormErrors] = useState({
+    service: "",
+    fullName: "",
+    phoneNumber: ""
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    // Show modal if register parameter is true
     if (searchParams.get('register') === 'true') {
       setShowModal(true);
     }
 
-    // Preload the worker image
     const img = new Image();
     img.src = worker;
     img.onload = () => setImageLoaded(true);
   }, [searchParams]);
 
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {
+      service: "",
+      fullName: "",
+      phoneNumber: ""
+    };
+
+    // Service validation
+    if (!selectedService) {
+      newErrors.service = "Please select a service";
+      valid = false;
+    }
+
+    // Full name validation (only letters, spaces, and apostrophes)
+    const nameRegex = /^[a-zA-Z\s']+$/;
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+      valid = false;
+    } else if (!nameRegex.test(formData.fullName)) {
+      newErrors.fullName = "Name should only contain letters, spaces, and apostrophes";
+      valid = false;
+    } else if (formData.fullName.trim().length < 2) {
+      newErrors.fullName = "Name should be at least 2 characters";
+      valid = false;
+    }
+
+    // Phone number validation (only numbers, exactly 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "Phone number is required";
+      valid = false;
+    } else if (!phoneRegex.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Please enter a valid 10-digit phone number";
+      valid = false;
+    }
+
+    setFormErrors(newErrors);
+    return valid;
+  };
+
   const handleClose = () => {
     setShowModal(false);
     setApiError(null);
     setSuccessMessage(null);
+    setFormErrors({
+      service: "",
+      fullName: "",
+      phoneNumber: ""
+    });
     navigate('/join', { replace: true });
   };
 
@@ -64,48 +113,81 @@ const JoinHomieFix = () => {
   const handleServiceSelect = (service) => {
     setSelectedService(service);
     setFormData({...formData, service});
+    setFormErrors({...formErrors, service: ""});
     setIsDropdownOpen(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // For full name, prevent numbers and special characters (except spaces and apostrophes)
+    if (name === 'fullName') {
+      if (!/^[a-zA-Z\s']*$/.test(value)) return;
+    }
+    
+    // For phone number, only allow numbers
+    if (name === 'phoneNumber') {
+      if (!/^\d*$/.test(value) && value !== '') return;
+      if (value.length > 10) return;
+    }
+    
     setFormData({...formData, [name]: value});
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors({...formErrors, [name]: ""});
+    }
+  };
+
+  const checkExistingNumber = async (phoneNumber) => {
+    try {
+      const response = await api.get(`/partner/check?phoneNumber=${phoneNumber}`);
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error checking phone number:", error);
+      return false;
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!selectedService) {
-      alert("Please select a service");
-      return;
-    }
+    if (!validateForm()) return;
 
-    const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(formData.phoneNumber)) {
-      alert("Please enter a valid 10-digit phone number");
-      return;
-    }
-
+    // Check if phone number already exists
     setIsSubmitting(true);
-    setApiError(null);
-    setSuccessMessage(null);
     try {
+      const numberExists = await checkExistingNumber(formData.phoneNumber);
+      if (numberExists) {
+        setFormErrors({
+          ...formErrors,
+          phoneNumber: "This phone number is already registered"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Proceed with submission if number doesn't exist
       const response = await api.post('/partner/add', {
         service: formData.service,
-        fullName: formData.fullName,
+        fullName: formData.fullName.trim(),
         phoneNumber: formData.phoneNumber
       });
 
       console.log("API Response:", response.data);
-      
       setSuccessMessage("Your application has been submitted successfully!");
       
+      // Reset form
       setFormData({
         service: "",
         fullName: "",
         phoneNumber: ""
       });
       setSelectedService("");
+      setFormErrors({
+        service: "",
+        fullName: "",
+        phoneNumber: ""
+      });
       
       setTimeout(() => {
         handleClose();
@@ -147,7 +229,7 @@ const JoinHomieFix = () => {
               src={worker} 
               alt="Worker" 
               className="img-fluid" 
-              loading="eager"  // Changed from lazy to eager for above-the-fold image
+              loading="eager"
               style={{
                 opacity: imageLoaded ? 1 : 0,
                 transition: 'opacity 0.5s ease-in',
@@ -329,7 +411,7 @@ const JoinHomieFix = () => {
                   <label htmlFor="service" className="modal-label">Service</label>
                   <div className="mb-3 mt-1 position-relative">
                     <div
-                      className="form-control no-focus-border custom-input dropdown-toggle-custom"
+                      className={`form-control no-focus-border custom-input dropdown-toggle-custom ${formErrors.service ? 'is-invalid' : ''}`}
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
                       <span className='' style={{color:'black', fontWeight:'400', fontSize:'14px'}}>
@@ -337,6 +419,9 @@ const JoinHomieFix = () => {
                       </span>
                       <img src={drop} alt="" className="dropdown-caret" />
                     </div>
+                    {formErrors.service && (
+                      <div className="text-danger small mt-1">{formErrors.service}</div>
+                    )}
 
                     {isDropdownOpen && (
                       <div className="dropdown-menu-custom mt-2">
@@ -358,7 +443,7 @@ const JoinHomieFix = () => {
                   <label htmlFor="fullName" className="modal-label mt-3">Full name</label>
                   <div className="input-group gap-2 mb-3">
                     <input 
-                      className="form-control no-focus-border no-radius" 
+                      className={`form-control no-focus-border no-radius ${formErrors.fullName ? 'is-invalid' : ''}`} 
                       placeholder="Full name"
                       name="fullName"
                       value={formData.fullName}
@@ -366,12 +451,15 @@ const JoinHomieFix = () => {
                       required
                     />
                   </div>
+                  {formErrors.fullName && (
+                    <div className="text-danger small mb-2">{formErrors.fullName}</div>
+                  )}
           
                   <label htmlFor="phoneNumber" className="modal-label">Phone number</label>
                   <div className="input-group gap-2">
-                    <span className="input-group-text no-focus-border no-radius  no-bg">+91</span>
+                    <span className="input-group-text no-focus-border no-radius no-bg">+91</span>
                     <input 
-                      className="form-control no-focus-border no-radius" 
+                      className={`form-control no-focus-border no-radius ${formErrors.phoneNumber ? 'is-invalid' : ''}`} 
                       placeholder="Phone number"
                       name="phoneNumber"
                       value={formData.phoneNumber}
@@ -380,6 +468,9 @@ const JoinHomieFix = () => {
                       maxLength="10"
                     />
                   </div>
+                  {formErrors.phoneNumber && (
+                    <div className="text-danger small mt-1">{formErrors.phoneNumber}</div>
+                  )}
                 </div>
 
                 <div className="modal-footer mt-5">

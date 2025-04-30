@@ -31,7 +31,65 @@ const Contact = () => {
     phoneNumber: "",
     message: ""
   });
+  const [formErrors, setFormErrors] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    message: ""
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateFullName = (name) => {
+    if (!name.trim()) {
+      return "Full name is required";
+    }
+    if (/[^a-zA-Z\s]/.test(name)) {
+      return "Name should only contain letters";
+    }
+    return "";
+  };
+
+  const validateEmail = (email) => {
+    if (!email) {
+      return "Email is required";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return "";
+  };
+
+  const validatePhoneNumber = (phone) => {
+    if (!phone) {
+      return "Phone number is required";
+    }
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return "Please enter a valid 10-digit phone number";
+    }
+    return "";
+  };
+
+  const validateMessage = (message) => {
+    if (!message.trim()) {
+      return "Message is required";
+    }
+    return "";
+  };
+
+  const validateForm = () => {
+    const errors = {
+      fullName: validateFullName(formData.fullName),
+      email: validateEmail(formData.email),
+      phoneNumber: validatePhoneNumber(formData.phoneNumber),
+      message: validateMessage(formData.message)
+    };
+    
+    setFormErrors(errors);
+    
+    return Object.values(errors).every(error => error === "");
+  };
 
   const handleServiceSelect = (service) => {
     setSelectedService(service);
@@ -41,7 +99,23 @@ const Contact = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Prevent numbers and special chars in fullName
+    if (name === "fullName") {
+      if (/[^a-zA-Z\s]/.test(value)) return;
+    }
+    
+    // Limit phone number to 10 digits
+    if (name === "phoneNumber") {
+      if (value.length > 10 || !/^\d*$/.test(value)) return;
+    }
+    
     setFormData({ ...formData, [name]: value });
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors({ ...formErrors, [name]: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -55,15 +129,19 @@ const Contact = () => {
       return;
     }
 
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const response = await api.post("/contact/add", {
         service: selectedService.toLowerCase(),
-        fullName: formData.fullName,
-        email: formData.email,
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
         phoneNumber: formData.phoneNumber,
-        message: formData.message
+        message: formData.message.trim()
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -91,15 +169,19 @@ const Contact = () => {
         message: ""
       });
       setSelectedService("");
+      setFormErrors({
+        fullName: "",
+        email: "",
+        phoneNumber: "",
+        message: ""
+      });
     } catch (error) {
       console.error("Error submitting form:", error);
 
       let errorMessage = "Error submitting form. Please try again.";
       if (error.response) {
-        // The request was made and the server responded with a status code
         errorMessage = error.response.data?.message || errorMessage;
       } else if (error.request) {
-        // The request was made but no response was received
         errorMessage = "No response from server. Please check your connection.";
       }
 
@@ -248,12 +330,17 @@ const Contact = () => {
                     <input
                       type="text"
                       name="fullName"
-                      className="form-control no-focus-border custom-input"
+                      className={`form-control no-focus-border custom-input ${formErrors.fullName ? 'is-invalid' : ''}`}
                       placeholder="Full name"
                       value={formData.fullName}
                       onChange={handleInputChange}
                       required
                     />
+                    {formErrors.fullName && (
+                      <div className="invalid-feedback d-block">
+                        {formErrors.fullName}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="form-group mb-2">
@@ -262,42 +349,68 @@ const Contact = () => {
                     <input
                       type="email"
                       name="email"
-                      className="form-control no-focus-border custom-input"
+                      className={`form-control no-focus-border custom-input ${formErrors.email ? 'is-invalid' : ''}`}
                       placeholder="Email"
                       value={formData.email}
                       onChange={handleInputChange}
                       required
                     />
+                    {formErrors.email && (
+                      <div className="invalid-feedback d-block">
+                        {formErrors.email}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="form-group mb-2">
                   <label className="form-label">Phone number</label>
-                  <div className="mb-3 d-flex mt-0">
-                    <span className="me-2 p-2 border" style={{ color: "#C3C3C3" }}>
-                      +91
-                    </span>
-                    <input
-                      type="tel"
-                      name="phoneNumber"
-                      className="form-control no-focus-border custom-input"
-                      placeholder="Phone number"
-                      value={formData.phoneNumber}
-                      onChange={handleInputChange}
-                      required
-                    />
+                  <div className="mb-3 mt-0">
+                    <div className="d-flex align-items-start">
+                      <span className="me-2 p-2 border" style={{ 
+                        color: "#C3C3C3",
+                        height: "38px", // Match input height
+                        display: "flex",
+                        alignItems: "center"
+                      }}>
+                        +91
+                      </span>
+                      <div style={{ flex: 1 }}>
+                        <input
+                          type="tel"
+                          name="phoneNumber"
+                          className={`form-control no-focus-border custom-input ${formErrors.phoneNumber ? 'is-invalid' : ''}`}
+                          placeholder="Phone number"
+                          value={formData.phoneNumber}
+                          onChange={handleInputChange}
+                          required
+                          maxLength="10"
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                    </div>
+                    {formErrors.phoneNumber && (
+                      <div className="invalid-feedback d-block mt-1">
+                        {formErrors.phoneNumber}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="form-group mb-2">
                   <label className="form-label">Message</label>
                   <div className="mb-3 mt-0">
                     <textarea
-                      className="form-control no-focus-border meseage-input"
+                      className={`form-control no-focus-border meseage-input ${formErrors.message ? 'is-invalid' : ''}`}
                       name="message"
                       rows="4"
                       placeholder="Message"
                       value={formData.message}
                       onChange={handleInputChange}
                     ></textarea>
+                    {formErrors.message && (
+                      <div className="invalid-feedback d-block">
+                        {formErrors.message}
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -27,6 +27,7 @@ const QuickOrder = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [phoneError, setPhoneError] = useState('');
     const popupRef = useRef(null);
     const chatbotRef = useRef(null);
 
@@ -34,6 +35,7 @@ const QuickOrder = () => {
         setIsPopupOpen(!isPopupOpen);
         if (!isPopupOpen) {
             setSubmitSuccess(false);
+            setPhoneError('');
         }
     };
 
@@ -48,8 +50,69 @@ const QuickOrder = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handlePhoneChange = (e) => {
+        const input = e.target.value;
+        // Allow only digits and limit to 10 characters
+        const numbersOnly = input.replace(/\D/g, '').slice(0, 10);
+        setFormData(prev => ({ ...prev, phone: numbersOnly }));
+        
+        // Clear error when user starts typing
+        if (phoneError && numbersOnly.length > 0) {
+            setPhoneError('');
+        }
+    };
+
+    const validatePhone = () => {
+        if (formData.phone.length !== 10) {
+            setPhoneError('Phone number must be 10 digits');
+            return false;
+        }
+        setPhoneError('');
+        return true;
+    };
+
+    const handleNameChange = (e) => {
+        const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+        setFormData(prev => ({ ...prev, name: value }));
+    };
+
+    const handleDateChange = (e) => {
+        const selectedDate = new Date(e.target.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate >= today) {
+            setFormData(prev => ({ ...prev, date: e.target.value }));
+        }
+    };
+
+    const getMinDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate phone number first
+        if (!validatePhone()) {
+            return;
+        }
+        
+        // Additional validation
+        if (!formData.name || formData.name.trim().length < 2) {
+            alert('Please enter a valid name (at least 2 characters)');
+            return;
+        }
+        
+        if (!formData.date) {
+            alert('Please select a valid date');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -185,15 +248,22 @@ const QuickOrder = () => {
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Ph No</label>
-                                        <input
-                                            type="text"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            placeholder='phone number'
-                                            className='line'
-                                            required
-                                        />
+                                        <div style={{ width: '51%' }}>
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                value={formData.phone}
+                                                onChange={handlePhoneChange}
+                                                onBlur={validatePhone}
+                                                placeholder='Ph No'
+                                                className='line'
+                                                required
+                                                maxLength="10"
+                                                pattern="\d{10}"
+                                                title="Please enter exactly 10 digits"
+                                            />
+                                            {phoneError && <div className="error-message" style={{ color: 'red', fontSize: '12px' }}>{phoneError}</div>}
+                                        </div>
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Name</label>
@@ -201,10 +271,12 @@ const QuickOrder = () => {
                                             type="text"
                                             name="name"
                                             value={formData.name}
-                                            onChange={handleInputChange}
+                                            onChange={handleNameChange}
                                             placeholder='name'
                                             className='line'
                                             required
+                                            pattern="[a-zA-Z\s]+"
+                                            title="Please enter only letters"
                                         />
                                     </div>
                                     <div className="form-field d-flex">
@@ -213,9 +285,10 @@ const QuickOrder = () => {
                                             type="date"
                                             name="date"
                                             value={formData.date}
-                                            onChange={handleInputChange}
+                                            onChange={handleDateChange}
                                             className='line date-input'
                                             required
+                                            min={getMinDate()}
                                         />
                                     </div>
                                     <div className="form-field d-flex">
