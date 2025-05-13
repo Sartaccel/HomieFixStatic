@@ -142,5 +142,6 @@
     box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
     background: white;
    margin-top: 1px;
+   z-index: 1;
   }
 }

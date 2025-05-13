@@ -64,15 +64,13 @@ const HomePage = () => {
 
 
   useEffect(() => {
-    if (!isMobile) {
-      const interval = setInterval(() => {
-        setCurrentImage((prevImage) => (prevImage + 1) % images.length);
-      }, 4000);
+    const interval = setInterval(() => {
+      setCurrentImage((prevImage) => (prevImage + 1) % images.length);
+    }, 4000);
+ 
+    return () => clearInterval(interval);
+  }, []);
 
-
-      return () => clearInterval(interval);
-    }
-  }, [isMobile]);
  
 
 
@@ -124,7 +122,7 @@ const HomePage = () => {
           {images.map((img, index) => (
             <img
               key={index}
-              src={isMobile ? mediaimage : img}
+              src={img}
               alt="home"
               className={`img-fluid custom-mt ${index === currentImage ? "active" : ""}`}
             />
@@ -190,7 +188,7 @@ const HomePage = () => {
         <div className='text-container1'>
        
         <div className='fw-medium content'>
-         <h4 className="heading">Why HomieFix  <HiArrowTurnRightDown className="curved-arrow" /></h4>
+         <h4 className="heading ps-4">Why HomieFix  <HiArrowTurnRightDown className="curved-arrow" /></h4>
          
          <div className='paragraph-container'>
           <div className='column'>

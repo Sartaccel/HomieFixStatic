@@ -44,8 +44,12 @@ const JoinHomieFix = () => {
   const [apiError, setApiError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Check if mobile device
+    setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
     if (searchParams.get('register') === 'true') {
       setShowModal(true);
     }
@@ -63,13 +67,11 @@ const JoinHomieFix = () => {
       phoneNumber: ""
     };
 
-    // Service validation
     if (!selectedService) {
       newErrors.service = "Please select a service";
       valid = false;
     }
 
-    // Full name validation (only letters, spaces, and apostrophes)
     const nameRegex = /^[a-zA-Z\s']+$/;
     if (!formData.fullName.trim()) {
       newErrors.fullName = "Full name is required";
@@ -82,7 +84,6 @@ const JoinHomieFix = () => {
       valid = false;
     }
 
-    // Phone number validation (only numbers, exactly 10 digits)
     const phoneRegex = /^\d{10}$/;
     if (!formData.phoneNumber) {
       newErrors.phoneNumber = "Phone number is required";
@@ -108,7 +109,21 @@ const JoinHomieFix = () => {
     navigate('/join', { replace: true });
   };
 
-  const handleShow = () => setShowModal(true);
+  const handleShow = () => {
+    setShowModal(true);
+    // Reset form state when showing modal
+    setFormData({
+      service: "",
+      fullName: "",
+      phoneNumber: ""
+    });
+    setSelectedService("");
+    setFormErrors({
+      service: "",
+      fullName: "",
+      phoneNumber: ""
+    });
+  };
 
   const handleServiceSelect = (service) => {
     setSelectedService(service);
@@ -120,19 +135,16 @@ const JoinHomieFix = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // For full name, prevent numbers and special characters (except spaces and apostrophes)
     if (name === 'fullName') {
       if (!/^[a-zA-Z\s']*$/.test(value)) return;
     }
     
-    // For phone number, only allow numbers
     if (name === 'phoneNumber') {
       if (!/^\d*$/.test(value) && value !== '') return;
       if (value.length > 10) return;
     }
     
     setFormData({...formData, [name]: value});
-    // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors({...formErrors, [name]: ""});
     }
@@ -144,17 +156,26 @@ const JoinHomieFix = () => {
       return response.data.exists;
     } catch (error) {
       console.error("Error checking phone number:", error);
+      // For mobile, we might want to handle network errors differently
+      if (isMobile && error.message.includes('Network Error')) {
+        setApiError("Please check your internet connection and try again");
+      }
       return false;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Important for mobile touch events
+    
+    // Prevent double submission on mobile
+    if (isSubmitting) return;
     
     if (!validateForm()) return;
 
-    // Check if phone number already exists
     setIsSubmitting(true);
+    setApiError(null); // Clear previous errors
+    
     try {
       const numberExists = await checkExistingNumber(formData.phoneNumber);
       if (numberExists) {
@@ -166,12 +187,17 @@ const JoinHomieFix = () => {
         return;
       }
 
-      // Proceed with submission if number doesn't exist
-      const response = await api.post('/partner/add', {
-        service: formData.service,
-        fullName: formData.fullName.trim(),
-        phoneNumber: formData.phoneNumber
-      });
+      // Added timeout for mobile to ensure proper request handling
+      const response = await Promise.race([
+        api.post('/partner/add', {
+          service: formData.service,
+          fullName: formData.fullName.trim(),
+          phoneNumber: formData.phoneNumber
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 15000)
+        )
+      ]);
 
       console.log("API Response:", response.data);
       setSuccessMessage("Your application has been submitted successfully!");
@@ -195,7 +221,16 @@ const JoinHomieFix = () => {
       
     } catch (error) {
       console.error("Error submitting form:", error);
-      setApiError("An error occurred while submitting your application. Please try again.");
+      let errorMessage = "An error occurred while submitting your application. Please try again.";
+      
+      if (error.message === 'Request timeout') {
+        errorMessage = "The request took too long. Please check your internet connection and try again.";
+      } else if (error.response) {
+        // Handle specific API errors
+        errorMessage = error.response.data.message || errorMessage;
+      }
+      
+      setApiError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -256,7 +291,11 @@ const JoinHomieFix = () => {
               Join our network and get more job opportunities without the hassle of marketing or customer hunting.
             </p>
 
-            <button className="btn btn-outline-primary rounded-pill px-4 apply-btn" onClick={handleShow}>
+            <button 
+              className="btn btn-outline-primary rounded-pill px-4 apply-btn" 
+              onClick={handleShow}
+              style={{ touchAction: 'manipulation' }} // Improve touch responsiveness
+            >
               Apply Now
             </button>
           </div>
@@ -413,6 +452,7 @@ const JoinHomieFix = () => {
                     <div
                       className={`form-control no-focus-border custom-input dropdown-toggle-custom ${formErrors.service ? 'is-invalid' : ''}`}
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      style={{ touchAction: 'manipulation' }}
                     >
                       <span className='' style={{color:'black', fontWeight:'400', fontSize:'14px'}}>
                         {selectedService || "Service"}
@@ -429,7 +469,11 @@ const JoinHomieFix = () => {
                           <div key={index}>
                             <div
                               className="dropdown-item-custom"
-                              onClick={() => handleServiceSelect(service)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleServiceSelect(service);
+                              }}
+                              style={{ touchAction: 'manipulation' }}
                             >
                               {service}
                             </div>
@@ -449,6 +493,7 @@ const JoinHomieFix = () => {
                       value={formData.fullName}
                       onChange={handleInputChange}
                       required
+                      style={{ touchAction: 'manipulation' }}
                     />
                   </div>
                   {formErrors.fullName && (
@@ -466,6 +511,8 @@ const JoinHomieFix = () => {
                       onChange={handleInputChange}
                       required
                       maxLength="10"
+                      inputMode="numeric" // Better mobile keyboard
+                      style={{ touchAction: 'manipulation' }}
                     />
                   </div>
                   {formErrors.phoneNumber && (
@@ -478,8 +525,14 @@ const JoinHomieFix = () => {
                     className="modal-submit-btn" 
                     type="submit"
                     disabled={isSubmitting}
+                    style={{ touchAction: 'manipulation' }}
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Submitting...
+                      </>
+                    ) : "Submit"}
                   </button>
                 </div>
               </form>

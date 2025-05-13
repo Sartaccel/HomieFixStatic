@@ -4,7 +4,7 @@ import bigLogo from "../assets/bigLogo.jpg";
 import "../styles/About.css";
 import NavigationBar from './NavigationBar';
 import { FaArrowLeftLong } from "react-icons/fa6";
-import Footer from './Footer';
+import Footer from './Footer'; 
 
 const About = () => {
   const navigate = useNavigate();
@@ -40,7 +40,6 @@ const About = () => {
           </div>
         </div>
       </div>
-
       <div className='vision-container'>
         <h6>Our Vision</h6>
         <p>To revolutionize home services, making them seamless, efficient, and more accessible than ever before.</p>

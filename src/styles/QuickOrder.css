@@ -121,21 +121,67 @@ input[type="date"].line.date-input:not([value]) {
 .line {
     border-color: #C9C9C9;
     border: 1px solid #C9C9C9;
-    border-radius: 3px;
-    color: #A8A8A8 !important;   
+    border-radius: 3px; 
 }
 
-.line[type="date"] {
-    appearance: none;
-    /* Removes OS default style */
-    -webkit-appearance: none;
-    /* For Safari */
-    padding-right: 23px;
-    /* space for icon */
-    text-align: left;
-    /* ensures text starts from the left */
-    
+.main-line{
+    border-color: #C9C9C9;
+    border: 1px solid #C9C9C9;
+    border-radius: 3px;
 }
+
+.lined {
+    border-color: #C9C9C9;
+    border: 1px solid #C9C9C9;
+    border-radius: 3px;
+    color: #A8A8A8;
+    width: 60%;
+}
+
+/* Placeholder color */
+.lined::placeholder {
+    color: #A8A8A8;
+}
+
+/* When user has selected a date */
+.lined:not(:placeholder-shown) {
+    color: #000;
+}
+
+
+/* Base style for the input */
+input[type="date"] {
+    color: black; /* Default text color */
+  }
+  
+  /* Placeholder style for empty input */
+  input[type="date"]:not(:focus):invalid {
+    color: #A8A8A8;
+  }
+  
+  /* WebKit specific styles */
+  input[type="date"]::-webkit-datetime-edit {
+    color: inherit; /* Inherits from parent */
+  }
+  
+  input[type="date"]:invalid::-webkit-datetime-edit {
+    color: #A8A8A8;
+  }
+  
+  input[type="date"]:valid::-webkit-datetime-edit,
+  input[type="date"]:focus::-webkit-datetime-edit {
+    color: black;
+  }
+  
+  /* Firefox style */
+  input[type="date"]:invalid {
+    color: #A8A8A8;
+  }
+  
+  input[type="date"]:valid {
+    color: black;
+  }
+
 
 .popup-submit {
     width: 100%;
@@ -173,19 +219,21 @@ input[type="date"].line.date-input:not([value]) {
     .service-booking-popup{
         width: 104%;
     }
-    .service-mob{
-      width: 120%;
-      margin-right: 33px;
-    }
+   
 }
 
 @media (max-width: 525px) {
     .service-booking-popup{
         width: 105%;
     }
-    .service-mob{
-        width: 125%;
-        margin-right: 33px;
+    
+    .lined {
+        border-color: #C9C9C9;
+        border: 1px solid #C9C9C9;
+        border-radius: 3px;
+        color: #A8A8A8 !important;
+        width: 64%;
+    
     }
 }
 

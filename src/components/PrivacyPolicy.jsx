@@ -128,9 +128,12 @@ const PrivacyPolicy = () => {
                         7. Contact Us
                     </h2>
                     <p style={{ marginBottom: '15px', lineHeight: '1.6' }}>
-        For any questions or concerns regarding this Privacy Policy, contact us at{' '}
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@homiefix.in">contact@homiefix.in</a>
-    </p>
+                        For any questions or concerns regarding this Privacy Policy, contact us at{' '}
+                        <a href="https://mail.google.com/mail/u/1/?ogbl#inbox?compose=CllgCHrjFBkMldbMzNNThtrpJmvsjgZlvvMNtmjHdKpBvXbGlBnRRpDmhzssSdXjsZzHvgHbSgB" target="_blank" rel="noopener noreferrer">
+                            contact@homiefix.in
+                        </a>
+
+                    </p>
 
                 </div>
             </div>

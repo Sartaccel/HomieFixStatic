@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 import mail from "../assets/mail.svg";
 import phone from "../assets/phone.svg";
 import drop from "../assets/Vector 77.svg";
@@ -38,6 +39,20 @@ const Contact = () => {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const validateFullName = (name) => {
     if (!name.trim()) {
@@ -100,19 +115,16 @@ const Contact = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Prevent numbers and special chars in fullName
     if (name === "fullName") {
       if (/[^a-zA-Z\s]/.test(value)) return;
     }
     
-    // Limit phone number to 10 digits
     if (name === "phoneNumber") {
       if (value.length > 10 || !/^\d*$/.test(value)) return;
     }
     
     setFormData({ ...formData, [name]: value });
     
-    // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors({ ...formErrors, [name]: "" });
     }
@@ -120,6 +132,14 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isOnline) {
+      toast.error("No internet connection. Please check your network and try again.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+      return;
+    }
 
     if (!selectedService) {
       toast.warning("Please select a service", {
@@ -135,6 +155,11 @@ const Contact = () => {
 
     setIsSubmitting(true);
 
+    const source = axios.CancelToken.source();
+    const timeout = setTimeout(() => {
+      source.cancel('Request timeout. Please try again.');
+    }, 10000); // 10 seconds timeout
+
     try {
       const response = await api.post("/contact/add", {
         service: selectedService.toLowerCase(),
@@ -145,8 +170,11 @@ const Contact = () => {
       }, {
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        cancelToken: source.token
       });
+
+      clearTimeout(timeout);
 
       console.log("Response:", response.data);
 
@@ -160,7 +188,6 @@ const Contact = () => {
         progress: undefined,
       });
  
-      // Reset form after successful submission
       setFormData({
         service: "",
         fullName: "",
@@ -176,13 +203,17 @@ const Contact = () => {
         message: ""
       });
     } catch (error) {
+      clearTimeout(timeout);
       console.error("Error submitting form:", error);
 
       let errorMessage = "Error submitting form. Please try again.";
-      if (error.response) {
+      
+      if (axios.isCancel(error)) {
+        errorMessage = error.message;
+      } else if (error.response) {
         errorMessage = error.response.data?.message || errorMessage;
       } else if (error.request) {
-        errorMessage = "No response from server. Please check your connection.";
+        errorMessage = "Unable to connect to server. Please check your internet connection and try again.";
       }
 
       toast.error(errorMessage, {
@@ -368,7 +399,7 @@ const Contact = () => {
                     <div className="d-flex align-items-start">
                       <span className="me-2 p-2 border" style={{ 
                         color: "#C3C3C3",
-                        height: "38px", // Match input height
+                        height: "38px",
                         display: "flex",
                         alignItems: "center"
                       }}>

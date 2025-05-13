@@ -26,9 +26,7 @@ const App = () => {
     <Router>
         <ScrollToTop />
       <NavigationBar />
-
       <QuickOrder />
-
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<Services />} />

@@ -28,6 +28,8 @@ const QuickOrder = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [phoneError, setPhoneError] = useState('');
+    const [formError, setFormError] = useState('');
+    const [dateError, setDateError] = useState('');
     const popupRef = useRef(null);
     const chatbotRef = useRef(null);
 
@@ -36,6 +38,8 @@ const QuickOrder = () => {
         if (!isPopupOpen) {
             setSubmitSuccess(false);
             setPhoneError('');
+            setFormError('');
+            setDateError('');
         }
     };
 
@@ -48,18 +52,15 @@ const QuickOrder = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        if (formError) setFormError('');
     };
 
     const handlePhoneChange = (e) => {
         const input = e.target.value;
-        // Allow only digits and limit to 10 characters
         const numbersOnly = input.replace(/\D/g, '').slice(0, 10);
         setFormData(prev => ({ ...prev, phone: numbersOnly }));
-        
-        // Clear error when user starts typing
-        if (phoneError && numbersOnly.length > 0) {
-            setPhoneError('');
-        }
+        if (phoneError) setPhoneError('');
+        if (formError) setFormError('');
     };
 
     const validatePhone = () => {
@@ -74,16 +75,32 @@ const QuickOrder = () => {
     const handleNameChange = (e) => {
         const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
         setFormData(prev => ({ ...prev, name: value }));
+        if (formError) setFormError('');
     };
 
     const handleDateChange = (e) => {
-        const selectedDate = new Date(e.target.value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const inputValue = e.target.value;
         
-        if (selectedDate >= today) {
-            setFormData(prev => ({ ...prev, date: e.target.value }));
+        // Check if the input matches YYYY-MM-DD format with exactly 4-digit year
+        const dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+        
+        if (inputValue && !dateRegex.test(inputValue)) {
+            setDateError('Please use YYYY-MM-DD format');
+            return;
         }
+
+        // Additional validation for the date
+        if (inputValue) {
+            const dateObj = new Date(inputValue);
+            if (isNaN(dateObj.getTime())) {
+                setDateError('Please enter a valid date');
+                return;
+            }
+        }
+
+        setDateError('');
+        setFormData(prev => ({ ...prev, date: inputValue }));
+        if (formError) setFormError('');
     };
 
     const getMinDate = () => {
@@ -94,50 +111,92 @@ const QuickOrder = () => {
         return `${year}-${month}-${day}`;
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        // Validate phone number first
-        if (!validatePhone()) {
-            return;
+    const validateForm = () => {
+        if (selectedService === "Service" || !formData.serviceName) {
+            setFormError('Please select a service');
+            return false;
         }
         
-        // Additional validation
+        if (!validatePhone()) {
+            return false;
+        }
+        
         if (!formData.name || formData.name.trim().length < 2) {
-            alert('Please enter a valid name (at least 2 characters)');
-            return;
+            setFormError('Please enter a valid name (at least 2 characters)');
+            return false;
         }
         
         if (!formData.date) {
-            alert('Please select a valid date');
+            setFormError('Please select a date');
+            return false;
+        }
+
+        if (dateError) {
+            setFormError('Please enter a valid date');
+            return false;
+        }
+
+        if (!formData.location || formData.location.trim().length < 3) {
+            setFormError('Please enter a valid location');
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) {
             return;
         }
 
         setIsSubmitting(true);
+        setFormError('');
 
         try {
-            const response = await api.post('/website-booking/add', {
+            const payload = {
                 serviceName: formData.serviceName,
-                name: formData.name,
+                name: formData.name.trim(),
                 phone: formData.phone,
                 date: formData.date,
-                location: formData.location
+                location: formData.location.trim()
+            };
+
+            const response = await api.post('/website-booking/add', payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                timeout: 10000
             });
 
-            console.log('Submission successful', response.data);
-            setSubmitSuccess(true);
-            // Reset form
-            setFormData({
-                serviceName: "",
-                name: '',
-                phone: '',
-                date: '',
-                location: ''
-            });
-            setSelectedService("Service");
+            if (response.status === 200 || response.status === 201) {
+                setSubmitSuccess(true);
+                setFormData({
+                    serviceName: "",
+                    name: '',
+                    phone: '',
+                    date: '',
+                    location: ''
+                });
+                setSelectedService("Service");
+            } else {
+                throw new Error(response.data?.message || 'Submission failed');
+            }
         } catch (error) {
-            console.error('Error submitting form:', error);
-            alert('Failed to submit. Please try again.');
+            let errorMsg = 'Failed to submit. Please try again.';
+            
+            if (error.response) {
+                errorMsg = error.response.data?.message || 
+                         `Server error: ${error.response.status}`;
+            } else if (error.request) {
+                errorMsg = 'Network error. Please check your connection.';
+            } else if (error.message && error.message.includes('timeout')) {
+                errorMsg = 'Request timeout. Please try again.';
+            }
+            
+            setFormError(errorMsg);
         } finally {
             setIsSubmitting(false);
         }
@@ -163,6 +222,26 @@ const QuickOrder = () => {
         };
     }, [isPopupOpen]);
 
+    useEffect(() => {
+        const handleTouchOutside = (event) => {
+            if (isPopupOpen &&
+                popupRef.current &&
+                !popupRef.current.contains(event.target) &&
+                chatbotRef.current &&
+                !chatbotRef.current.contains(event.target)) {
+                setIsPopupOpen(false);
+            }
+        };
+
+        if (isPopupOpen) {
+            document.addEventListener('touchstart', handleTouchOutside);
+        }
+
+        return () => {
+            document.removeEventListener('touchstart', handleTouchOutside);
+        };
+    }, [isPopupOpen]);
+
     return (
         <>
             <div className="quick-order-chatbot" onClick={togglePopup} ref={chatbotRef}>
@@ -184,18 +263,24 @@ const QuickOrder = () => {
                                 <button
                                     className="popup-submit"
                                     onClick={togglePopup}
+                                    type="button"
                                 >
                                     Close
                                 </button>
                             </div>
                         ) : (
                             <div className="popup-content">
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmit} noValidate>
+                                    {formError && (
+                                        <div className="error-message mb-2 text-center" style={{ color: 'red', fontSize: '14px' }}>
+                                            {formError}
+                                        </div>
+                                    )}
                                     <div className="form-field d-flex">
                                         <label className="field-label">Service</label>
-                                        <div className="position-relative service-mob" style={{ width: '51%' }}>
+                                        <div className="position-relative service-mob" style={{ width: '60%' }}>
                                             <div
-                                                className="line service-mob dropdown-toggle-custom"
+                                                className="main-line service-mob dropdown-toggle-custom"
                                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                                 style={{
                                                     display: 'flex',
@@ -203,7 +288,9 @@ const QuickOrder = () => {
                                                     alignItems: 'center',
                                                     padding: '0 10px',
                                                     cursor: 'pointer',
-                                                    height: '30px'
+                                                    height: '30px',
+                                                    border: '1px solid #C9C9C9',
+                                                    borderRadius: '3px'
                                                 }}
                                             >
                                                 <span style={{
@@ -248,7 +335,7 @@ const QuickOrder = () => {
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Ph No</label>
-                                        <div style={{ width: '51%' }}>
+                                        <div style={{ width: '60%' }}>
                                             <input
                                                 type="tel"
                                                 name="phone"
@@ -261,47 +348,83 @@ const QuickOrder = () => {
                                                 maxLength="10"
                                                 pattern="\d{10}"
                                                 title="Please enter exactly 10 digits"
+                                                style={{
+                                                    width: '100%',
+                                                    border: phoneError ? '1px solid red' : '1px solid #C9C9C9',
+                                                    borderRadius: '3px',
+                                                }}
                                             />
                                             {phoneError && <div className="error-message" style={{ color: 'red', fontSize: '12px' }}>{phoneError}</div>}
                                         </div>
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Name</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleNameChange}
-                                            placeholder='name'
-                                            className='line'
-                                            required
-                                            pattern="[a-zA-Z\s]+"
-                                            title="Please enter only letters"
-                                        />
+                                        <div style={{ width: '60%' }}>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={handleNameChange}
+                                                placeholder='Name'
+                                                className='line'
+                                                required
+                                                minLength="2"
+                                                style={{
+                                                    width: '100%',
+                                                    border: '1px solid #C9C9C9',
+                                                    borderRadius: '3px',
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Date</label>
-                                        <input
-                                            type="date"
-                                            name="date"
-                                            value={formData.date}
-                                            onChange={handleDateChange}
-                                            className='line date-input'
-                                            required
-                                            min={getMinDate()}
-                                        />
+                                        <div style={{ width: '60%' }}>
+                                            <input
+                                                type="date"
+                                                name="date"
+                                                value={formData.date}
+                                                onChange={handleDateChange}
+                                                onBlur={(e) => {
+                                                    if (e.target.value && !/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) {
+                                                        setDateError('Please use YYYY-MM-DD format');
+                                                    }
+                                                }}
+                                                className='lined'
+                                                required
+                                                min={getMinDate()}
+                                                style={{
+                                                    width: '100%',
+                                                    border: dateError ? '1px solid red' : '1px solid #C9C9C9',
+                                                    borderRadius: '3px',
+                                                }}
+                                            />
+                                            {dateError && (
+                                                <div className="error-message" style={{ color: 'red', fontSize: '12px' }}>
+                                                    {dateError}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="form-field d-flex">
                                         <label className="field-label">Location</label>
-                                        <input
-                                            type="text"
-                                            name="location"
-                                            value={formData.location}
-                                            onChange={handleInputChange}
-                                            placeholder='location'
-                                            className='line'
-                                            required
-                                        />
+                                        <div style={{ width: '60%' }}>
+                                            <input
+                                                type="text"
+                                                name="location"
+                                                value={formData.location}
+                                                onChange={handleInputChange}
+                                                placeholder='Location'
+                                                className='line'
+                                                required
+                                                minLength="3"
+                                                style={{
+                                                    width: '100%',
+                                                    border: '1px solid #C9C9C9',
+                                                    borderRadius: '3px',
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                     <button
                                         className="popup-submit"

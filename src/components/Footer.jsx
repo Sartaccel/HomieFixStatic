@@ -13,7 +13,7 @@ import "../styles/Footer.css";
 
 const Footer = () => {
   const navigate = useNavigate();
-  const handleRegisterClick = () => { 
+  const handleRegisterClick = () => {
 
 
     navigate('/join?register=true');
@@ -81,7 +81,10 @@ const Footer = () => {
       <hr className="my-4 full-width" />
       {/* Copyright */}
       <div className="text-center ">
-        <p className="mb-0  copyright-text" >© Copyright 2025 Enterkey Solutions. All rights reserved.</p>
+        <p className="mb-0 copyright-text">
+          © Copyright 2025 <a href="https://enterkeysolutions.com/" target="_blank" rel="noopener noreferrer">Enterkey Solutions</a>. All rights reserved.
+        </p>
+
       </div>
 
     </footer>
